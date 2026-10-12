@@ -1,0 +1,35 @@
+name: build_test_publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # ==========================================
+  # BUILD JOB - Compile and package
+  # ==========================================
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Java 21 and cache Maven dependencies
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Install dependencies and build
+        run: |
+          echo "Building the application..."
+          mvn clean install -DskipTests
+
+      - name: Save JAR for the publish job
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-jar
+          path: target/*.jar
